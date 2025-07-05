@@ -94,7 +94,7 @@ future works
 ![alt text](./resource/readme/image8.png)  
 
 2. avoid_obstacle_lidar.mlx
-
+lidar 데이터를 읽어서 DBSCAN 군집 알고리즘을 적용하여 장애물 위치를 localization 하고 이를 가지고 이진화 지도를 생성한다
 
 3. avoid_obstacle_robot.mlx
 
