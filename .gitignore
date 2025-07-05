@@ -1,0 +1,11 @@
+checkpoints/
+dataset/img/
+resource/dataset/
+resource/img/
+resource/data/
+slprj/
+
+*.csv
+*.xml
+
+dataset/img_labeling/
