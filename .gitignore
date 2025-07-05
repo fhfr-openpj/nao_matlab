@@ -1,10 +1,9 @@
-.checkpoints/
-.dataset/
-.resource/dataset/
-.resource/img/
-.slprj/
+checkpoints/
+dataset/img/
+resource/dataset/
+resource/img/
+slprj/
 
-*.png
 *.csv
 *.xml
 
