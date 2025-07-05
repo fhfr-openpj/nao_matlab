@@ -2,6 +2,7 @@
 .dataset
 .resource/dataset
 .resource/img
+.slprj
 
 *.png
 *.csv
