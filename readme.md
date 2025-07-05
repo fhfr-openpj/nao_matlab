@@ -37,21 +37,23 @@ webots 로봇의 트리에서
 Robot "NAO" -> children -> DEF HeardYaw Hinge2Joint -> endPoint Solid -> Camera "CameraTop" 
 width 640, height 480
 
+![alt text](./resource/readme/image7.png)![alt text](./resource/readme/image4.png)
+
 3. 장애물 추가 방법
 트리에서 Floor "floor" 를 클릭하여 포커스가 변경된 상태에서 상단바의 + 버튼 -> PROTO nodes (Webots Projects) ->  objects 에서 원하는 장애물 설치
 
-## 2. offline 작업
-우선 webots 의 로봇은 기본적으로 nao\controllers\nao_matlab\nao_matlab.m 파일로 실행된다. (트리에서 변경 가능)
-task 에 따라 사용되는 nao_matlab_~.m 코드를 nao_matlab.m 파일에 복사 붙여넣기 한 뒤 webots 에서 reload 한뒤 실행하면 변경된 코드로 실행된다.
+## 4. offline 작업
+**``우선 webots 의 로봇은 기본적으로 nao\controllers\nao_matlab\nao_matlab.m 파일로 실행된다. (트리에서 변경 가능)
+task 에 따라 사용되는 nao_matlab_~.m 코드를 nao_matlab.m 파일에 복사 붙여넣기 한 뒤 webots 에서 reload 한뒤 실행하면 변경된 코드로 실행된다.``**
 
 ![alt text](./resource/readme/image5.png)
 
 ### 2.1. Object Detection (YOLO v4)(Deep Learning)
 #### 2.1.1. dataset 생성
-1. nao_matlab_mk_img_dataset.m
-image 저장 -> frame_*.png 형태로 저장
-이미지중 기울어짐, 로봇의 이상 위치와 같은 잘못된 이미지 삭제
-frame_namer.mlx 파일 활용하여 모든 이미지의 frame 이 연속되도록 변경
+1. nao_matlab_mk_img_dataset.m -> nao_matlab.m  
+image 저장 -> frame_*.png 형태로 저장  
+이미지중 기울어짐, 로봇의 이상 위치와 같은 잘못된 이미지 삭제  
+frame_namer.mlx 파일 활용하여 모든 이미지의 frame 이 연속되도록 변경  
 ```
 Renamed: frame_1.png -> frame_0001.png
 Renamed: frame_2.png -> frame_0002.png
@@ -66,14 +68,14 @@ Renamed: frame_293.png -> frame_0221.png
 
 2. 비디오 레이블 지정기
 비디오 레이블 지정기 앱열어서 비디오 시퀀스 불러오기  
-![alt text](./resource/readme/image6.png)
+![alt text](./resource/readme/image6.png)  
 
-장애물 종류에 따라 라벨 생성후 라벨링
+장애물 종류에 따라 라벨 생성후 라벨링  
 
 #### 2.1.2. object detection model 생성 및 학습
-1. yolo_model_make.mlx
-첫번째 코드 matFile = "./~"; 에서 경로 설정을 하고 차례대로 실행
-포함된 코드
+1. yolo_model_make.mlx  
+첫번째 코드 matFile = "./~"; 에서 경로 설정을 하고 차례대로 실행  
+포함된 코드  
 - 모델 학습을 위한 data 구조 생성 및 모델 학습.
 - 학습된 모델의 정확도 확인
 - 임의의 사진에 적용하여 object detection 결과 확인 가능
@@ -85,9 +87,15 @@ future works
 
 ### 2.2. Path Planning (DDPG)(Reinforcement Learning)
 
+#### 2.2.1. lidar 데이터 기반 장애물 맵 생성 및 강화학습 경로 생성 모델 학습
+
+1. nao_matlab_mk_lidar_dataset.m -> nao_matlab.m
+코드를 실행하면 레이더 데이터가 시각적으로 표시되고 레이더 데이터가 csv 파일로 저장된다.  
+![alt text](./resource/readme/image8.png)  
+
+2. avoid_obstacle_lidar.mlx
 
 
+3. avoid_obstacle_robot.mlx
 
-
-
-## 3. online 작업
+## 5. online 작업
