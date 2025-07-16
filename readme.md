@@ -145,24 +145,24 @@ Webots는 기본적으로 `nao\controllers\nao_matlab\nao_matlab.m` 스크립트
 
    * Lidar CSV 읽기 → **DBSCAN** 으로 군집화 → 장애물 위치 추정
    * Occupancy Grid 생성  
-   <img src="./resource/readme/image9.png" alt="DBSCAN 결과" width="350"/>
+   <img src="./resource/readme/image9.png" alt="DBSCAN 결과" width="350"/>  
    * Simulink 기반 RL 환경 구성 → DDPG 학습  
-   <img src="./resource/readme/image10.png" alt="시뮬링크 화면" width="350"/>
-   * doTraining 변수를 통해 학습을 새롭게 할지 아니면 이전 학습된 모델을 사용할 지 결정
-   * true 로 하였을 떄 학습 실행  
-   <img src="./resource/readme/image11.png" alt="rl reward" width="350"/>
+   <img src="./resource/readme/image10.png" alt="시뮬링크 화면" width="350"/>  
+   * doTraining 변수를 통해 학습을 새롭게 할지 아니면 이전 학습된 모델을 사용할 지 결정  
+   * true 로 하였을 떄 학습 실행   
+   <img src="./resource/readme/image11.png" alt="rl reward" width="350"/>  
    * 학습된 모델은 아래와 같은 코드로 저장하여 재사용 가능  
     > save("trainedObstacleAvoidanceAgent_name.mat", "obstacleAvoidanceAgent");  
     * 학습되어 있는 모델 사용하였을 때 path planning 결과  
-    <img src="./resource/readme/image12.png" alt="load rl result" width="350"/>
-        simulate -> visualize 과정을 통해 path planning 결과 확인 가능
-        최하단 코드를 통해 원하는 위치의 장애물이 있는 새로운 이진화 맵을 생성하면 path planning 모델 성능 확인 가능
+    <img src="./resource/readme/image12.png" alt="load rl result" width="350"/>  
+        simulate -> visualize 과정을 통해 path planning 결과 확인 가능  
+        최하단 코드를 통해 원하는 위치의 장애물이 있는 새로운 이진화 맵을 생성하면 path   planning 모델 성능 확인 가능  
 
 3. `avoid_obstacle_robot.mlx`
 
-   * 학습된 에이전트 검증
-   * Pure Pursuit 추종 알고리즘 적용
-   * 초반 코드는 'avoid_obstacle_lidar.mlx' 코드와 유사하게 진행되며, 학습된 모델을 이용하여 path planning 결과 확인 가능
+   * 학습된 에이전트 검증  
+   * Pure Pursuit 추종 알고리즘 적용  
+   * 초반 코드는 'avoid_obstacle_lidar.mlx' 코드와 유사하게 진행되며, 학습된 모델을  이용하여 path planning 결과 확인 가능  
    * 그 이후 생성된 궤적을 로봇의 제한된(불연속적인) 이동 단위를 가지고 어떻게 rl 로 생성된 궤적을 추종하여 로봇이 걷게 하는 것과 관련된 로봇 이동 결과 확인 가능  
    <img src="./resource/readme/image13_1.png" alt="load rl result" width="80"/>
    <img src="./resource/readme/image13_2.png" alt="load rl result" width="80"/>
