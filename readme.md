@@ -1,101 +1,175 @@
-## 1. webots install & MATLAB Installation
-webots 2025a 버전 다운  
-<img src="./resource/readme/image2.png" alt="alt text" width="300"/>
+# Real-Time Obstacle Avoidance System for NAO
 
-https://cyberbotics.com/
+*MATLAB × Webots 프로젝트 가이드*
 
-## 2. webots & matlab integration
-### 프로젝트 폴더 생성
-webots 설치한 이후
->C:\Webots\projects\robots\softbank\  
+---
 
-이 경로의 nao 폴더 전체를 본인의 프로젝트 폴더로 이동시킨다.
-nao\worlds\ 의 nao_matlab.wbt 파일 실행
+## 목차
 
-### matlab cpp compiler 설치
-webots 시뮬레이터는 cpp 기반이기 때문에 matlab cpp compiler 필요  
-"On Windows the MATLAB MinGW-w64 C/C++ Compiler needs to be installed in addition to MATLAB."
-![alt text](./resource/readme/image.png)
-https://kr.mathworks.com/matlabcentral/fileexchange/52848-matlab-support-for-mingw-w64-c-c-fortran-compiler
+1. [환경 구축](#1-환경-구축-webots--matlab-설치)
+2. [Webots-MATLAB 통합](#2-webots--matlab-통합)
+3. [시뮬레이션 환경 설정](#3-시뮬레이션-환경robot-obstacle-설정)
+4. [오프라인 워크플로](#4-오프라인-워크플로)
 
-## 3. webots 환경(robot, obstacle) 세팅
-2번까지 되었을 때 파일중에 nao_matlab_v2.wbt 와 같이 world 파일을 nao\worlds 안에 복사하여 실행하거나 본인의 새로운 로봇, 장애물을 설치하고자 할 때에는 아래 과정 참고
+   1. [데이터셋 수집](#41-데이터셋-수집)
+   2. [Object Detection — YOLO v4](#42-object-detection--yolo-v4)
+   3. [Path Planning — DDPG](#43-path-planning--ddpg)
+5. [온라인 실행](#5-온라인-실행)
 
-webots 의 경우 화면 왼쪽에서 트리 구조를 통해 로봇의 센서, 센서 위치 등의 환경을 수정할 수 있다.
-트리에서 Nao "NAO" 를 오른쪽 마우스 클릭 하여 "convert root to base nodes" 를 하여 로봇의 센서 정보를 수정할 수 있도록 잠금 해제  
+---
 
-1. Lidar 센서 추가
+## 1. 환경 구축 (Webots & MATLAB 설치)
 
-![alt text](./resource/readme/image3.png)![alt text](./resource/readme/image4.png)
+| 툴          | 버전        | 비고                                             |
+| ---------- | --------- | ---------------------------------------------- |
+| **Webots** | 2025a     | [Cyberbotics 공식 사이트](https://cyberbotics.com/) |
+| **MATLAB** | R2025a 이상 | MinGW-w64 C/C++ Compiler 필수                    |
 
-Robot "NAO" -> children 에 Lidar 센서 추가
-Lidar 설정 -> tiltAngle -0.1, horizontalResolution 128, numberOfLayers 2, near 0.05, minRange 0.05, maxRange 8, defaultFrequency2
+### 설치 절차
 
+1. Webots 2025a 다운로드 및 설치 <img src="./resource/readme/image2.png" alt="Webots 2025a" width="300"/>
 
-2. Camera resolution 변경 (하지 않아도 됨, default 는 저화질)
-webots 로봇의 트리에서
-Robot "NAO" -> children -> DEF HeardYaw Hinge2Joint -> endPoint Solid -> Camera "CameraTop" 
-width 640, height 480
+2. MATLAB에 **MinGW-w64 C/C++ Compiler** 추가 설치
+   *On Windows the MATLAB MinGW-w64 C/C++ Compiler needs to be installed in addition to MATLAB.* <img src="./resource/readme/image.png" alt="MATLAB MinGW Installer" width="300"/>
+   설치 링크 → [https://kr.mathworks.com/matlabcentral/fileexchange/52848-matlab-support-for-mingw-w64-c-c-fortran-compiler](https://kr.mathworks.com/matlabcentral/fileexchange/52848-matlab-support-for-mingw-w64-c-c-fortran-compiler)
 
-![alt text](./resource/readme/image7.png)![alt text](./resource/readme/image4.png)
+---
 
-3. 장애물 추가 방법
-트리에서 Floor "floor" 를 클릭하여 포커스가 변경된 상태에서 상단바의 + 버튼 -> PROTO nodes (Webots Projects) ->  objects 에서 원하는 장애물 설치
+## 2. Webots-MATLAB 통합
 
-## 4. offline 작업
-**``우선 webots 의 로봇은 기본적으로 nao\controllers\nao_matlab\nao_matlab.m 파일로 실행된다. (트리에서 변경 가능)
-task 에 따라 사용되는 nao_matlab_~.m 코드를 nao_matlab.m 파일에 복사 붙여넣기 한 뒤 webots 에서 reload 한뒤 실행하면 변경된 코드로 실행된다.``**
+### 프로젝트 폴더 준비
 
-![alt text](./resource/readme/image5.png)
-
-### 2.1. Object Detection (YOLO v4)(Deep Learning)
-#### 2.1.1. dataset 생성
-1. nao_matlab_mk_img_dataset.m -> nao_matlab.m  
-image 저장 -> frame_*.png 형태로 저장  
-이미지중 기울어짐, 로봇의 이상 위치와 같은 잘못된 이미지 삭제  
-frame_namer.mlx 파일 활용하여 모든 이미지의 frame 이 연속되도록 변경  
-```
-Renamed: frame_1.png -> frame_0001.png
-Renamed: frame_2.png -> frame_0002.png
-Renamed: frame_3.png -> frame_0003.png
-Renamed: frame_4.png -> frame_0004.png
-Renamed: frame_8.png -> frame_0005.png
-Renamed: frame_9.png -> frame_0006.png
-...
-Renamed: frame_292.png -> frame_0220.png
-Renamed: frame_293.png -> frame_0221.png
+```text
+C:\Webots\projects\robots\softbank\
 ```
 
-2. 비디오 레이블 지정기
-비디오 레이블 지정기 앱열어서 비디오 시퀀스 불러오기  
-![alt text](./resource/readme/image6.png)  
+위 경로의 **`nao`** 폴더를 통째로 복사하여 *자신의* 프로젝트 디렉터리로 이동합니다.
+`nao\worlds\nao_matlab.wbt` 를 더블 클릭하여 기본 월드를 실행하세요.
 
-장애물 종류에 따라 라벨 생성후 라벨링  
+---
 
-#### 2.1.2. object detection model 생성 및 학습
-1. yolo_model_make.mlx  
-첫번째 코드 matFile = "./~"; 에서 경로 설정을 하고 차례대로 실행  
-포함된 코드  
-- 모델 학습을 위한 data 구조 생성 및 모델 학습.
-- 학습된 모델의 정확도 확인
-- 임의의 사진에 적용하여 object detection 결과 확인 가능
-- 신경망 구조 확인
-- 최종 모델 파일로 저장 -> "detector_nao_0630.m"
+## 3. 시뮬레이션 환경(robot, obstacle) 설정
 
-2. object detetection model 경량화
-future works
+Webots 왼쪽 트리(Tree) 창에서 로봇 및 센서 노드를 편집할 수 있습니다.
 
-### 2.2. Path Planning (DDPG)(Reinforcement Learning)
+### 센서 편집 권한 해제
 
-#### 2.2.1. lidar 데이터 기반 장애물 맵 생성 및 강화학습 경로 생성 모델 학습
+`Nao "NAO"` 노드 → **우클릭 > Convert Root to Base Nodes**
 
-1. nao_matlab_mk_lidar_dataset.m -> nao_matlab.m
-코드를 실행하면 레이더 데이터가 시각적으로 표시되고 레이더 데이터가 csv 파일로 저장된다.  
-![alt text](./resource/readme/image8.png)  
+### 3.1 Lidar 센서 추가
 
-2. avoid_obstacle_lidar.mlx
-lidar 데이터를 읽어서 DBSCAN 군집 알고리즘을 적용하여 장애물 위치를 localization 하고 이를 가지고 이진화 지도를 생성한다
+1. `Robot "NAO"` → **children** → *Add* → `Lidar`
+2. 주요 파라미터
 
-3. avoid_obstacle_robot.mlx
+   | 파라미터                   | 값        |
+   | ---------------------- | -------- |
+   | `tiltAngle`            | `-0.1`   |
+   | `horizontalResolution` | `128`    |
+   | `numberOfLayers`       | `2`      |
+   | `near` / `minRange`    | `0.05 m` |
+   | `maxRange`             | `8 m`    |
+   | `defaultFrequency`     | `2 Hz`   |
 
-## 5. online 작업
+   <img src="./resource/readme/image3.png" alt="Lidar 추가" width="300"/> <img src="./resource/readme/image4.png" alt="Lidar 설정" width="300"/>
+
+### 3.2 카메라 해상도 변경 (선택)
+
+`Robot "NAO"` → `DEF HeadYaw Hinge2Joint` → `endPoint Solid` → `Camera "CameraTop"`
+*width 640*, *height 480* <img src="./resource/readme/image7.png" alt="Camera 설정" width="300"/>
+
+### 3.3 장애물 추가
+
+`Floor "floor"` 선택 → 상단 **＋** → *PROTO nodes (Webots Projects) → objects* 에서 원하는 오브젝트 삽입
+
+---
+
+## 4. 오프라인 워크플로
+
+### 컨트롤러 교체
+
+Webots는 기본적으로 `nao\controllers\nao_matlab\nao_matlab.m` 스크립트를 로드합니다.
+작업별 스크립트(`nao_matlab_*.m`)를 작성한 뒤 **내용을 복사–붙여넣기** 하고 Webots에서 *Reload* 하면 즉시 반영됩니다. <img src="./resource/readme/image5.png" alt="Controller Reload" width="350"/>
+
+### 4.1 데이터셋 수집
+
+#### 4.1.1 이미지 데이터셋
+
+1. `nao_matlab_mk_img_dataset.m` → `nao_matlab.m` 으로 복사
+2. 실행하면 `frame_*.png` 형식으로 이미지가 저장됩니다.
+3. 품질이 낮은 프레임 삭제 후 `frame_namer.mlx` 로 번호를 0-padding 형태로 일괄 수정
+
+   ```
+   Renamed: frame_1.png   → frame_0001.png
+   Renamed: frame_2.png   → frame_0002.png
+   ...
+   Renamed: frame_293.png → frame_0221.png
+   ```
+
+#### 4.1.2 라벨링
+
+`비디오 레이블 지정기(Video Labeler)` 앱 → 비디오 시퀀스 불러오기 → 클래스별 라벨 생성 & 수동 라벨링 <img src="./resource/readme/image6.png" alt="Video Labeler" width="350"/>
+
+### 4.2 Object Detection — YOLO v4
+
+1. `yolo_model_make.mlx`
+
+   ```matlab
+   matFile = "./<dataset-path>.mat";  % 데이터셋 경로 지정
+   ```
+
+   순서대로 실행하면
+
+   * 학습/검증 데이터 구조 생성
+   * YOLO v4 네트워크 학습
+   * 정밀도(Precision) · 재현율(Recall) 평가
+   * 임의 이미지에서 검출 결과 시각화
+   * 네트워크 구조(`analyzeNetwork`) 확인
+   * 최종 모델 저장 → **`detector_nao_0630.mat`**
+
+2. **모델 경량화(Quantization·Pruning)** → *Future Works*
+
+### 4.3 Path Planning — DDPG
+
+#### 4.3.1 Lidar 데이터셋 & RL 환경
+
+1. `nao_matlab_mk_lidar_dataset.m` → `nao_matlab.m`
+
+   * 실시간 Lidar 시각화
+   * CSV 로 데이터 로깅 <img src="./resource/readme/image8.png" alt="Lidar 시각화" width="350"/>
+
+
+
+
+2. `avoid_obstacle_lidar.mlx`
+
+   * Lidar CSV 읽기 → **DBSCAN** 으로 군집화 → 장애물 위치 추정
+   * Occupancy Grid 생성 <img src="./resource/readme/image9.png" alt="DBSCAN 결과" width="350"/>
+   * Simulink 기반 RL 환경 구성 → DDPG 학습 <img src="./resource/readme/image10.png" alt="시뮬링크 화면" width="350"/>
+   * doTraining 변수를 통해 학습을 새롭게 할지 아니면 이전 학습된 모델을 사용할 지 결정
+   * true 로 하였을 떄 학습 실행
+   <img src="./resource/readme/image11.png" alt="rl reward" width="350"/>
+
+
+
+>
+
+3. `avoid_obstacle_robot.mlx`
+
+   * 학습된 에이전트 검증
+   * Pure Pursuit 추종 알고리즘 적용
+
+---
+
+## 5. 온라인 실행
+
+최종 통합 스크립트: **`nao_matlab_online_walk.m`** → `nao_matlab.m` 에 복사 후 Webots 실행
+
+* 강화학습 기반 경로(waypoints)를 실시간 생성
+* Pure Pursuit 로봇 제어(전진·좌·우 스텝)
+* Object Detection 결과와 Lidar 장애물 맵을 HUD 에 동시 시각화
+
+---
+
+
+
+
