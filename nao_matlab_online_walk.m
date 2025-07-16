@@ -47,7 +47,7 @@ end
 save_images = struct('camera_top', true, 'camera_top_r', true, 'camera_top_l', true);
 
 if isempty(obAgent)
-    load('trainedObstacleAvoidanceAgent_250618.mat','obstacleAvoidanceAgent');
+    load('trainedObstacleAvoidanceAgent_250625.mat','obstacleAvoidanceAgent');
     obAgent = obstacleAvoidanceAgent;                       % 캐시
     assignin('base','obstacleAvoidanceAgent',obAgent);      % 베이스 등록
 end
